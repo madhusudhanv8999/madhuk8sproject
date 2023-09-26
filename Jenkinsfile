@@ -1,29 +1,35 @@
 pipeline {
     agent any
     stages {
-        stage('Pull Code From GitHub') {
-            steps {
-                git 'https://github.com/Iam-mithran/kuber.git'
-            }
+        stage ( 'Pull Code From Github'){
+        steps{
+           git 'https://github.com/balasubramaniyand/07k8sprojcet.git'
         }
-        stage('Build the Docker image') {
+    }
+    stage('docker'){
+    steps {
+        sh'sudo docker images'
+    }
+}
+stage('Build the Dcoker images'){
+    steps{
+        sh' sudo docker build -t balasubramaniyand/love01:latest /var/lib/jenkins/workspace/love'
+        sh 'sudo docker tag  balasubramaniyand/love01:latest balasubramaniyand/love:${BUILD_NUMBER}'
+    }
+    }
+    stage('Push the Docker image') {
             steps {
-                sh 'sudo docker build -t newimage /var/lib/jenkins/workspace/kuber'
-                sh 'sudo docker tag newimage iammithran/newimage:latest'
-                sh 'sudo docker tag newimage iammithran/newimage:${BUILD_NUMBER}'
-            }
-        }
-        stage('Push the Docker image') {
-            steps {
-                sh 'sudo docker image push iammithran/newimage:latest'
-                sh 'sudo docker image push iammithran/newimage:${BUILD_NUMBER}'
+                sh 'sudo docker image push balasubramaniyand/love01:latest'
+                sh 'sudo docker image push balasubramaniyand/love01:${BUILD_NUMBER}'
             }
         }
         stage('Deploy on Kubernetes') {
             steps {
-                sh 'kubectl apply -f /var/lib/jenkins/workspace/kuber/pod.yaml'
-                sh 'kubectl rollout restart deployment loadbalancer-pod'
+                sh 'sudo kubectl apply -f /var/lib/jenkins/workspace/love/pod.yaml'
+                sh 'sudo kubectl rollout restart deployment loadbalancer-pod'
             }
         }
     }
 }
+
+
